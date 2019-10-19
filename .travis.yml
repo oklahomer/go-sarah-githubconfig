@@ -18,3 +18,5 @@ matrix:
     - go: tip
 git:
   depth: 10
+env:
+  - GO111MODULE=on
