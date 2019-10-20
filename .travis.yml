@@ -13,6 +13,7 @@ script:
   - go test -race ./...
   - go test -cover ./...
   - goveralls -service=travis-ci
+  - goveralls -service=travis-ci -ignore=examples/*/*.go
 matrix:
   allow_failures:
     - go: tip
