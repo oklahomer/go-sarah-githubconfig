@@ -3,11 +3,11 @@ package githubconfig
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/oklahomer/go-sarah/v2"
 	"github.com/shurcooL/githubv4"
 	"golang.org/x/oauth2"
-	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v2"
 	"path"
 	"path/filepath"
@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-var SubscriptionTimeout = xerrors.New("timeout")
+var SubscriptionTimeout = errors.New("timeout")
 
 type Config struct {
 	Owner    string        `json:"owner" yaml:"owner"`
@@ -168,7 +168,7 @@ func read(f *file, out interface{}) error {
 		return json.Unmarshal([]byte(f.content), out)
 
 	default:
-		return xerrors.Errorf("unsupported file extension for %s: %s", f.id, f.extension)
+		return fmt.Errorf("unsupported file extension for %s: %s", f.id, f.extension)
 
 	}
 }
@@ -184,7 +184,7 @@ func (w *watcher) get(ctx context.Context, botType sarah.BotType) (map[string]*f
 	}
 	err := w.client.Query(ctx, q, variables)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to query Github API: %w", err)
+		return nil, fmt.Errorf("failed to query Github API: %w", err)
 	}
 
 	files := map[string]*file{}
@@ -215,7 +215,7 @@ func New(ctx context.Context, cfg *Config, opts ...Option) (sarah.ConfigWatcher,
 		opt(w)
 	}
 	if w.client == nil {
-		return nil, xerrors.New("githubv4.Client must be derived from WithClient or WithToken option")
+		return nil, errors.New("githubv4.Client must be derived from WithClient or WithToken option")
 	}
 
 	go w.operate(ctx)

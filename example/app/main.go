@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/oklahomer/go-sarah-githubconfig"
 	_ "github.com/oklahomer/go-sarah-githubconfig/example/plugin/hello"
 	"github.com/oklahomer/go-sarah/v2"
 	"github.com/oklahomer/go-sarah/v2/slack"
-	"golang.org/x/xerrors"
 	"os"
 	"os/signal"
 	"syscall"
@@ -55,11 +55,11 @@ func setupWatcher(ctx context.Context) error {
 	cfg := githubconfig.NewConfig("oklahomer", "go-sarah-githubconfig-example", "config")
 	token := os.Getenv("GITHUB_TOKEN")
 	if token == "" {
-		return xerrors.New("GITHUB_TOKEN is not set")
+		return errors.New("GITHUB_TOKEN is not set")
 	}
 	watcher, err := githubconfig.New(ctx, cfg, githubconfig.WithToken(ctx, token))
 	if err != nil {
-		return xerrors.Errorf("failed to construct ConfigWatcher: %w", err)
+		return fmt.Errorf("failed to construct ConfigWatcher: %w", err)
 	}
 
 	sarah.RegisterConfigWatcher(watcher)
@@ -70,17 +70,17 @@ func setupBot() error {
 	config := slack.NewConfig()
 	token := os.Getenv("SLACK_TOKEN")
 	if token == "" {
-		return xerrors.New("SLACK_TOKEN is not set")
+		return errors.New("SLACK_TOKEN is not set")
 	}
 	config.Token = token
 
 	adapter, err := slack.NewAdapter(config)
 	if err != nil {
-		return xerrors.Errorf("failed to construct an Adapter: %w", err)
+		return fmt.Errorf("failed to construct an Adapter: %w", err)
 	}
 	bot, err := sarah.NewBot(adapter)
 	if err != nil {
-		return xerrors.Errorf("failed to construct a Bot: %w", err)
+		return fmt.Errorf("failed to construct a Bot: %w", err)
 	}
 
 	sarah.RegisterBot(bot)
