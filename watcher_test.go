@@ -2,10 +2,10 @@ package githubconfig
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"github.com/oklahomer/go-sarah/v2"
+	"github.com/oklahomer/go-sarah/v4"
 	"github.com/shurcooL/githubv4"
-	"golang.org/x/xerrors"
 	"strconv"
 	"testing"
 	"time"
@@ -134,7 +134,7 @@ func TestWatcher_Read(t *testing.T) {
 				unsubscription: nil,
 			}
 
-			expected := xerrors.New("dummy")
+			expected := errors.New("dummy")
 			go func() {
 				select {
 				case r := <-req:
@@ -155,11 +155,11 @@ func TestWatcher_Read(t *testing.T) {
 			e := w.Read(context.Background(), botType, id, out)
 
 			if tt.timeout {
-				if !xerrors.Is(e, SubscriptionTimeout) {
+				if !errors.Is(e, SubscriptionTimeout) {
 					t.Error("Expected timeout did not occur.")
 				}
 			} else {
-				if !xerrors.Is(e, expected) {
+				if !errors.Is(e, expected) {
 					t.Errorf("Expected error is not returned: %+v", e)
 				}
 			}

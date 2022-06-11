@@ -7,8 +7,8 @@ package hello
 
 import (
 	"context"
-	"github.com/oklahomer/go-sarah/v2"
-	"github.com/oklahomer/go-sarah/v2/slack"
+	"github.com/oklahomer/go-sarah/v4"
+	"github.com/oklahomer/go-sarah/v4/slack"
 	"strings"
 )
 
