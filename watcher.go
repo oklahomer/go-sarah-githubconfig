@@ -279,31 +279,33 @@ type querier interface {
 //    }
 // 	}
 type query struct {
-	Repository struct {
-		Object struct {
-			Tree struct {
-				Entries []struct {
-					Name   githubv4.String
-					Object struct {
-						Blob struct {
-							Oid  githubv4.String
-							Text githubv4.String
-						} `graphql:"... on Blob"`
-					}
-				}
-			} `graphql:"... on Tree"`
-		} `graphql:"object(expression: $expression)"`
-	} `graphql:"repository(owner: $owner, name: $name)"`
+	Repository repository `graphql:"repository(owner: $owner, name: $name)"`
+}
+
+type repository struct {
+	Object repositoryObject `graphql:"object(expression: $expression)"`
+}
+
+type repositoryObject struct {
+	Tree tree `graphql:"... on Tree"`
+}
+
+type tree struct {
+	Entries []entry
+}
+
+type entryObject struct {
+	Blob blob `graphql:"... on Blob"`
+}
+
+type blob struct {
+	Oid  githubv4.String
+	Text githubv4.String
 }
 
 type entry struct {
 	Name   githubv4.String
-	Object struct {
-		Blob struct {
-			Oid  githubv4.String
-			Text githubv4.String
-		} `graphql:"... on Blob"`
-	}
+	Object entryObject
 }
 
 type file struct {

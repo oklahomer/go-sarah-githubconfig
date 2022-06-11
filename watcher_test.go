@@ -252,30 +252,15 @@ func TestWatcher_get(t *testing.T) {
 			t.Errorf("Expected 'expression' value of %s but was %s", e, expectedExp)
 		}
 
-		typed.Repository.Object.Tree.Entries = []struct {
-			Name   githubv4.String
-			Object struct {
-				Blob struct {
-					Oid  githubv4.String
-					Text githubv4.String
-				} `graphql:"... on Blob"`
-			}
-		}{
+		typed.Repository.Object.Tree.Entries = []entry{
 			{
 				Name: githubv4.String(fmt.Sprintf("%s%s", id, ext)),
-				Object: struct {
-					Blob struct {
-						Oid  githubv4.String
-						Text githubv4.String
-					} `graphql:"... on Blob"`
-				}{
-					Blob: struct {
-						Oid  githubv4.String
-						Text githubv4.String
-					}{
+				Object: entryObject{
+					Blob: blob{
 						Oid:  githubv4.String(oid),
 						Text: githubv4.String(text),
-					}},
+					},
+				},
 			},
 		}
 
