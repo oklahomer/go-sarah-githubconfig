@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"github.com/oklahomer/go-sarah-githubconfig"
 	_ "github.com/oklahomer/go-sarah-githubconfig/example/plugin/hello"
-	"github.com/oklahomer/go-sarah/v2"
-	"github.com/oklahomer/go-sarah/v2/slack"
+	"github.com/oklahomer/go-sarah/v4"
+	"github.com/oklahomer/go-sarah/v4/slack"
 	"os"
 	"os/signal"
 	"syscall"
@@ -78,10 +78,7 @@ func setupBot() error {
 	if err != nil {
 		return fmt.Errorf("failed to construct an Adapter: %w", err)
 	}
-	bot, err := sarah.NewBot(adapter)
-	if err != nil {
-		return fmt.Errorf("failed to construct a Bot: %w", err)
-	}
+	bot := sarah.NewBot(adapter)
 
 	sarah.RegisterBot(bot)
 	return nil

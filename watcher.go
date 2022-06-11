@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/oklahomer/go-sarah/v2"
+	"github.com/oklahomer/go-sarah/v4"
 	"github.com/shurcooL/githubv4"
 	"golang.org/x/oauth2"
 	"gopkg.in/yaml.v2"

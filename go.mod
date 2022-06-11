@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/oklahomer/go-sarah/v2 v2.0.3
+	github.com/oklahomer/go-sarah/v4 v4.0.3
 	github.com/shurcooL/githubv4 v0.0.0-20220520033151-0b4e3294ff00
 	github.com/shurcooL/graphql v0.0.0-20220606043923-3cf50f8a0a29 // indirect
 	golang.org/x/net v0.0.0-20220607020251-c690dde0001d // indirect

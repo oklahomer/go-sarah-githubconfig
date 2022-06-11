@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/oklahomer/go-sarah/v2"
+	"github.com/oklahomer/go-sarah/v4"
 	"github.com/shurcooL/githubv4"
 	"strconv"
 	"testing"
