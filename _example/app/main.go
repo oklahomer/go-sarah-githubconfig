@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"errors"
+	_ "example/plugin/hello"
 	"fmt"
 	"github.com/oklahomer/go-sarah-githubconfig"
-	_ "github.com/oklahomer/go-sarah-githubconfig/example/plugin/hello"
 	"github.com/oklahomer/go-sarah/v4"
 	"github.com/oklahomer/go-sarah/v4/slack"
 	"os"
@@ -74,7 +74,7 @@ func setupBot() error {
 	}
 	config.Token = token
 
-	adapter, err := slack.NewAdapter(config)
+	adapter, err := slack.NewAdapter(config, slack.WithRTMPayloadHandler(slack.DefaultRTMPayloadHandler))
 	if err != nil {
 		return fmt.Errorf("failed to construct an Adapter: %w", err)
 	}
