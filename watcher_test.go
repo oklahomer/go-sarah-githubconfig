@@ -252,30 +252,15 @@ func TestWatcher_get(t *testing.T) {
 			t.Errorf("Expected 'expression' value of %s but was %s", e, expectedExp)
 		}
 
-		typed.Repository.Object.Tree.Entries = []struct {
-			Name   githubv4.String
-			Object struct {
-				Blob struct {
-					Oid  githubv4.String
-					Text githubv4.String
-				} `graphql:"... on Blob"`
-			}
-		}{
+		typed.Repository.Object.Tree.Entries = []entry{
 			{
 				Name: githubv4.String(fmt.Sprintf("%s%s", id, ext)),
-				Object: struct {
-					Blob struct {
-						Oid  githubv4.String
-						Text githubv4.String
-					} `graphql:"... on Blob"`
-				}{
-					Blob: struct {
-						Oid  githubv4.String
-						Text githubv4.String
-					}{
+				Object: entryObject{
+					Blob: blob{
 						Oid:  githubv4.String(oid),
 						Text: githubv4.String(text),
-					}},
+					},
+				},
 			},
 		}
 
@@ -337,4 +322,58 @@ func TestWithToken(t *testing.T) {
 	if w.client == nil {
 		t.Error("Client must be set with the given token")
 	}
+}
+
+func TestWatcher_operate(t *testing.T) {
+	t.Run("request", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		updatedValue := "updated"
+		commandID := "test"
+		request := make(chan *request, 1)
+		w := &watcher{
+			client: &DummyQuerier{
+				QueryFunc: func(ctx context.Context, q interface{}, variables map[string]interface{}) error {
+					target := q.(*query)
+					target.Repository.Object.Tree.Entries = []entry{
+						{
+							Name: githubv4.String(fmt.Sprintf("%s.json", commandID)),
+							Object: entryObject{
+								Blob: blob{
+									Oid:  "abc",
+									Text: githubv4.String(fmt.Sprintf(`{"value": "%s"}`, updatedValue)),
+								},
+							},
+						},
+					}
+					return nil
+				},
+			},
+			config: &Config{
+				TimeOut:  100 * time.Millisecond,
+				Interval: 10 * time.Second,
+			},
+			request:        request,
+			subscription:   nil,
+			unsubscription: nil,
+		}
+		go w.operate(ctx)
+
+		type config struct {
+			Value string `json:"value"`
+		}
+
+		cfg := &config{Value: "pre"}
+		botType := sarah.BotType("dummy")
+		err := w.Read(ctx, botType, commandID, cfg)
+
+		if err != nil {
+			t.Errorf("Unexpected error is returned: %s", err.Error())
+		}
+
+		if cfg.Value != updatedValue {
+			t.Errorf("The updated value is not reflected to the config: %s", cfg.Value)
+		}
+	})
 }
