@@ -2,22 +2,23 @@ language: go
 sudo: false
 
 go:
-  - "1.12"
-  - "1.13"
+  - "1.16"
+  - "1.17"
+  - "1.18"
   - "tip"
 
 before_install:
   - export PATH=$HOME/gopath/bin:$PATH
-  - go get github.com/mattn/goveralls
+  - go install github.com/mattn/goveralls@latest
+
 script:
   - go test -race ./...
-  - go test -cover ./...
-  - goveralls -service=travis-ci
-  - goveralls -service=travis-ci -ignore=examples/*/*.go
+  - go test -coverprofile=coverage.out -cover ./...
+  - goveralls -coverprofile=coverage.out -service=travis-ci
+
 matrix:
   allow_failures:
     - go: tip
+
 git:
   depth: 10
-env:
-  - GO111MODULE=on
