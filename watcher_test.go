@@ -323,3 +323,57 @@ func TestWithToken(t *testing.T) {
 		t.Error("Client must be set with the given token")
 	}
 }
+
+func TestWatcher_operate(t *testing.T) {
+	t.Run("request", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+
+		updatedValue := "updated"
+		commandID := "test"
+		request := make(chan *request, 1)
+		w := &watcher{
+			client: &DummyQuerier{
+				QueryFunc: func(ctx context.Context, q interface{}, variables map[string]interface{}) error {
+					target := q.(*query)
+					target.Repository.Object.Tree.Entries = []entry{
+						{
+							Name: githubv4.String(fmt.Sprintf("%s.json", commandID)),
+							Object: entryObject{
+								Blob: blob{
+									Oid:  "abc",
+									Text: githubv4.String(fmt.Sprintf(`{"value": "%s"}`, updatedValue)),
+								},
+							},
+						},
+					}
+					return nil
+				},
+			},
+			config: &Config{
+				TimeOut:  100 * time.Millisecond,
+				Interval: 10 * time.Second,
+			},
+			request:        request,
+			subscription:   nil,
+			unsubscription: nil,
+		}
+		go w.operate(ctx)
+
+		type config struct {
+			Value string `json:"value"`
+		}
+
+		cfg := &config{Value: "pre"}
+		botType := sarah.BotType("dummy")
+		err := w.Read(ctx, botType, commandID, cfg)
+
+		if err != nil {
+			t.Errorf("Unexpected error is returned: %s", err.Error())
+		}
+
+		if cfg.Value != updatedValue {
+			t.Errorf("The updated value is not reflected to the config: %s", cfg.Value)
+		}
+	})
+}

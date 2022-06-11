@@ -110,7 +110,8 @@ func (w *watcher) operate(ctx context.Context) {
 			if !ok {
 				cache[req.botType] = map[string]*file{}
 
-				files, err := w.get(ctx, req.botType)
+				var err error
+				files, err = w.get(ctx, req.botType)
 				if err != nil {
 					req.err <- err
 					continue
