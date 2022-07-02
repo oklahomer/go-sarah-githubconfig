@@ -33,12 +33,12 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v3
       - name: Test with ${{ matrix.go-version }} on ${{ matrix.os }}
-        run: go test -v -race -coverprofile=coverage.out ./...
+        run: go test -v -race -coverprofile=coverage ./...
       - name: Coveralls integration
         uses: shogo82148/actions-goveralls@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-profile: coverage.out
+          path-to-profile: coverage
           parallel: true
           job-number: ${{ strategy.job-index }}
 
