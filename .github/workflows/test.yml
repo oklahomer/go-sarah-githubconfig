@@ -1,9 +1,6 @@
 name: Test
 on:
   push:
-    branches:
-      - main
-      - feature/gh-action-trial
   pull_request:
     types:
       - opened
