@@ -1,0 +1,14 @@
+name: Reviewdog
+on:
+  - pull_request
+jobs:
+  golangci-lint:
+    name: golangci-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run golangci-lint
+        uses: reviewdog/action-golangci-lint@v2
+        with:
+          filter_mode: nofilter
+          tool_name: golint
